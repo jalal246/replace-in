@@ -1,0 +1,71 @@
+{
+  "name": "fmod",
+  "version": "0.0.0-beta",
+  "description": "NODE FILE MODIFIER",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha  --compilers js:babel-core/register test",
+    "test:w": "mocha  --compilers js:babel-core/register test -w",
+    "test:cov": "istanbul cover node_modules/mocha/bin/_mocha --  --compilers js:babel-core/register test",
+    "check:cov": "istanbul check-coverage --root coverage --statement 90 --branch 75 --function 80 --line 95",
+    "report:cov": "cat ./coverage/lcov.info | codecov",
+    "prebuild": "rimraf lib",
+    "build": "babel --out-dir lib src",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jimmy02020/fmod.git"
+  },
+  "keywords": [
+    "javascript",
+    "nodejs",
+    "node",
+    "node-js",
+    "nodejs-modules",
+    "node-modules",
+    "fs",
+    "stream",
+    "edit",
+    "modifier"
+  ],
+  "files": [
+    "lib",
+    "README.md"
+  ],
+  "author": "'Jalal Maskoun<'jimmy002020@gmail.com'>",
+  "license": "'MIT'",
+  "bugs": {
+    "url": "https://github.com/Jimmy02020/fmod/issues"
+  },
+  "homepage": "https://github.com/Jimmy02020/fmod#readme",
+  "babel": {
+    "presets": [
+      "es2015",
+      "stage-2"
+    ]
+  },
+  "devDependencies": {
+    "babel-cli": "6.24.1",
+    "babel-core": "6.25.0",
+    "babel-loader": "7.1.1",
+    "babel-preset-es2015": "6.24.1",
+    "babel-preset-stage-0": "6.24.1",
+    "chai": "4.1.0",
+    "codecov.io": "0.1.6",
+    "eslint": "4.3.0",
+    "eslint-config-airbnb-base": "11.3.0",
+    "eslint-plugin-import": "2.7.0",
+    "faker": "4.1.0",
+    "istanbul": "1.1.0-alpha.1",
+    "mocha": "3.4.2",
+    "rimraf": "2.6.1"
+  },
+  "dependencies": {
+    "pathre": "0.0.2"
+  }
+}
