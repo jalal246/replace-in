@@ -16,6 +16,8 @@ Return array of objects contains the final results in callback function.
 
 Original file won't be modified instead ``replace`` will create new file which have new data and delete the old one.
 
+
+
 Getting Started
 ---------------
 
@@ -99,6 +101,11 @@ Tests
 ```sh
 $ npm test
 ```
+
+DISCLAIMER :disappointed:
+------------------------
+This package was in version 0.0.1 under `fmod` - shortcut for file modifier name and has changed to `replace` in next version.
+It turns out that FMOD is a registered trademark :open_mouth: and I don't want troubles :relaxed: :sweat_smile:
 
 License
 -------
