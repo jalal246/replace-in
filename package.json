@@ -1,7 +1,7 @@
 {
-  "name": "fmod",
-  "version": "0.0.0-beta",
-  "description": "NODE FILE MODIFIER",
+  "name": "replace-in",
+  "version": "0.1.0",
+  "description": "Replacing Text In File For Node",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib",
@@ -19,19 +19,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Jimmy02020/fmod.git"
+    "url": "git+https://github.com/Jimmy02020/replace-in.git"
   },
   "keywords": [
-    "javascript",
-    "nodejs",
-    "node",
-    "node-js",
-    "nodejs-modules",
-    "node-modules",
+    "backend",
     "fs",
     "stream",
     "edit",
-    "modifier"
+    "modifier",
+    "replace"
   ],
   "files": [
     "lib",
@@ -40,9 +36,9 @@
   "author": "'Jalal Maskoun<'jimmy002020@gmail.com'>",
   "license": "'MIT'",
   "bugs": {
-    "url": "https://github.com/Jimmy02020/fmod/issues"
+    "url": "https://github.com/Jimmy02020/replace-in/issues"
   },
-  "homepage": "https://github.com/Jimmy02020/fmod#readme",
+  "homepage": "https://github.com/Jimmy02020/replace-in#readme",
   "babel": {
     "presets": [
       "es2015",
