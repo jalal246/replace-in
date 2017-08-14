@@ -1,4 +1,4 @@
-[![NPM](https://nodei.co/npm/fmod.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/replace-in/)
+[![NPM](https://nodei.co/npm/replace-in.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/replace-in/)
 
 [![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/Jimmy02020/replace-in)
 [![Codecov](https://img.shields.io/codecov/c/github/codecov/example-python.svg)](https://codecov.io/gh/Jimmy02020/replace-in)
@@ -16,8 +16,6 @@ Return array of objects contains the final results in callback function.
 
 Original file won't be modified instead ``replace`` will create new file which have new data and delete the old one.
 
-
-
 Getting Started
 ---------------
 
@@ -29,7 +27,7 @@ cd replace-in
 
 Using npm:
 ```sh
-$ npm install fmod
+$ npm install replace-in
 ```
 
 Syntax

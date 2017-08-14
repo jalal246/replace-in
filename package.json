@@ -1,6 +1,6 @@
 {
   "name": "replace-in",
-  "version": "0.1.0",
+  "version": "0.1.0rc",
   "description": "Replacing Text In File For Node",
   "main": "lib/index.js",
   "directories": {
@@ -15,7 +15,7 @@
     "report:cov": "cat ./coverage/lcov.info | codecov",
     "prebuild": "rimraf lib",
     "build": "babel --out-dir lib src",
-    "prepublish": "npm run build"
+    "prepublishOnly": "npm test && npm run build"
   },
   "repository": {
     "type": "git",
