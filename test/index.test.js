@@ -5,7 +5,7 @@ import path from 'path';
 import faker from 'faker';
 // import assert from 'assert';
 
-import fmod from '../src';
+import replace from '../src';
 
 
 const expect = chai.expect;
@@ -25,15 +25,15 @@ const LABLE7 = 'cannot be last forever';
 const LABLE8 = 'right?';
 const LABLE9 = 'what!!';
 
-const pharse1 = { reg: LABLE1, rep: 'replace with new 1' };
-const pharse2 = { reg: new RegExp(`${LABLE2}`), rep: 'replace with new 2' };
-const pharse3 = { reg: LABLE3, rep: 'replace with new 3' };
-const pharse4 = { reg: LABLE4, rep: 'replace with new 4' };
-const pharse5 = { reg: new RegExp(`${LABLE5}`), rep: 'replace with new 5' };
-const pharse6 = { reg: LABLE6, rep: 'replace with new 6' };
-const pharse7 = { reg: LABLE7, rep: 'replace with new 7' };
-const pharse8 = { reg: new RegExp(`${LABLE8}`), rep: 'replace with new 8' };
-const pharse9 = { reg: /what!!/ig, rep: 'replace with new 9' };
+const pharse1 = { regex: LABLE1, replace: 'replace with new 1' };
+const pharse2 = { regex: new RegExp(`${LABLE2}`), replace: 'replace with new 2' };
+const pharse3 = { regex: LABLE3, replace: 'replace with new 3' };
+const pharse4 = { regex: LABLE4, replace: 'replace with new 4' };
+const pharse5 = { regex: new RegExp(`${LABLE5}`), replace: 'replace with new 5' };
+const pharse6 = { regex: LABLE6, replace: 'replace with new 6' };
+const pharse7 = { regex: LABLE7, replace: 'replace with new 7' };
+const pharse8 = { regex: new RegExp(`${LABLE8}`), replace: 'replace with new 8' };
+const pharse9 = { regex: /what!!/ig, replace: 'replace with new 9' };
 
 const request = [
   pharse1,
@@ -54,39 +54,39 @@ describe('read and replace stream function', () => {
       fs.closeSync(fs.openSync(fileExist, 'w'));
     });
     it('throws error for invalid callback function', () => {
-      // console.log(fmod(fwithInfoSpreaded, [], 'test'));
-      expect(() => fmod(fileExist, [], 'test')).to.throw(Error);
+      // console.log(replace(fwithInfoSpreaded, [], 'test'));
+      expect(() => replace(fileExist, [], 'test')).to.throw(Error);
     });
     describe('return callback error msg callback error', () => {
       it('for invalid directory', (done) => {
-        fmod('fileExist', '', (err) => {
+        replace('fileExist', '', (err) => {
           // console.log(err);
           expect(err).to.be.an('error');
           done();
         });
       });
       it('for invalid array of objects', (done) => {
-        fmod(fileExist, '', (err) => {
+        replace(fileExist, '', (err) => {
           expect(err).to.be.an('error');
           done();
         });
       });
       it('for empty array of objects', (done) => {
-        fmod(fileExist, [], (err) => {
+        replace(fileExist, [], (err) => {
           // console.log(err);
           expect(err).to.be.an('error');
           done();
         });
       });
-      it('for invalid reg [regex or string]', (done) => {
-        fmod(fileExist, [{ reg: 8, rep: 'replace pharse' }], (err) => {
+      it('for invalid regex [regex or string]', (done) => {
+        replace(fileExist, [{ regex: 8, replace: 'replace pharse' }], (err) => {
           // console.log(err);
           expect(err).to.be.an('error');
           done();
         });
       });
       it('for invalid replace pharse', (done) => {
-        fmod(fileExist, [{ reg: /d/g, rep: 9 }], (err) => {
+        replace(fileExist, [{ regex: /d/g, replace: 9 }], (err) => {
           // console.log(err);
           expect(err).to.be.an('error');
           done();
@@ -127,9 +127,9 @@ describe('read and replace stream function', () => {
       ws1.end();
     });
     it('replaces spreaded strings', (done) => {
-      fmod(fwithInfoSpreaded, request, (err, report) => {
+      replace(fwithInfoSpreaded, request, (err, report) => {
         expect(report[0]).to.deep.equal({
-          isChanged: true, reg: LABLE1, rep: 'replace with new 1',
+          isChanged: true, regex: LABLE1, replace: 'replace with new 1',
         });
         done();
       });
@@ -149,12 +149,12 @@ describe('read and replace stream function', () => {
       ws2.end();
     });
     it('returns isChanged false beacuse of not matching', (done) => {
-      fmod(fwithoutInfo, request, (err, report) => {
+      replace(fwithoutInfo, request, (err, report) => {
         expect(report[0]).to.deep.equal({
-          isChanged: false, reg: LABLE1, rep: 'replace with new 1',
+          isChanged: false, regex: LABLE1, replace: 'replace with new 1',
         });
         expect(report[7]).to.deep.equal({
-          isChanged: false, reg: new RegExp(`${LABLE8}`), rep: 'replace with new 8',
+          isChanged: false, regex: new RegExp(`${LABLE8}`), replace: 'replace with new 8',
         });
         done();
       });
@@ -183,9 +183,9 @@ describe('read and replace stream function', () => {
       ws3.end();
     });
     it('returns isChanged false beacuse of not matching', (done) => {
-      fmod(fwitInfoStack, request, (err, report) => {
+      replace(fwitInfoStack, request, (err, report) => {
         expect(report[0]).to.deep.equal({
-          isChanged: true, reg: LABLE1, rep: 'replace with new 1',
+          isChanged: true, regex: LABLE1, replace: 'replace with new 1',
         });
         done();
       });

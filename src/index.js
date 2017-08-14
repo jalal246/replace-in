@@ -1,1 +1,1 @@
-export { default } from './fmod';
+export { default } from './replace';

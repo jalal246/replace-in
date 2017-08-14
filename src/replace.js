@@ -1,14 +1,12 @@
 /* eslint no-underscore-dangle: ["error", { "allow": ["_transform"] }] */
 /* eslint func-names: ["error", "never"] */
 
-import {
-  fs,
-  path,
-  crypto,
-  stream,
-  util,
-  get,
-} from './deps';
+import fs from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import stream from 'stream';
+import util from 'util';
+import { get } from 'pathre';
 
 const Transform = stream.Transform;
 
@@ -28,7 +26,7 @@ const errUnit = errMsg => new Error(`\x1b[33m${errMsg}\x1b[0m`);
 const isStr = str => typeof str === 'string';
 
 // check if input is regex
-const isReg = reg => typeof reg === 'object';
+const isReg = regex => typeof regex === 'object';
 
 // gets the phrase length
 const phLen = phrase => phrase.length;
@@ -48,7 +46,7 @@ const genRandomFn = (dir) => {
  * @callback {err~boolean}
  * if found and replaced then true, otherwise false.
  */
-const fmod = (dir, arrayOfobj, cb) => {
+const replace = (dir, arrayOfobj, cb) => {
   // validate callback, else every error will be handled in callback error
   if (typeof cb !== 'function') throw errUnit(cbMsg);
   // validate file.
@@ -62,11 +60,11 @@ const fmod = (dir, arrayOfobj, cb) => {
     // validate the objects inside.
     for (let i = 0; i < arrayLen; i += 1) {
       // validate regMsg in find
-      if (!isReg(arrayOfobj[i].reg) && !isStr(arrayOfobj[i].reg)) {
-        return cb(errUnit(regMsg + arrayOfobj[i].reg));
+      if (!isReg(arrayOfobj[i].regex) && !isStr(arrayOfobj[i].regex)) {
+        return cb(errUnit(regMsg + arrayOfobj[i].regex));
       }
       // validate regMsg in replace
-      if (!isStr(arrayOfobj[i].rep)) return cb(errUnit(strMsg + arrayOfobj[i].rep));
+      if (!isStr(arrayOfobj[i].replace)) return cb(errUnit(strMsg + arrayOfobj[i].replace));
     }
     // Everything good sir! ****************************************************
     // create array of flags
@@ -89,8 +87,8 @@ const fmod = (dir, arrayOfobj, cb) => {
         let newChunk = chunk.toString();
         for (let i = 0; i < arrayLen; i += 1) {
           if (!isFlags[i]) {
-            if (newChunk.match(arrayOfobj[i].reg)) {
-              newChunk = newChunk.replace(arrayOfobj[i].reg, arrayOfobj[i].rep);
+            if (newChunk.match(arrayOfobj[i].regex)) {
+              newChunk = newChunk.replace(arrayOfobj[i].regex, arrayOfobj[i].replace);
               isFlags[i] = true;
             }
           }
@@ -126,8 +124,8 @@ const fmod = (dir, arrayOfobj, cb) => {
             for (let i = 0; i < arrayLen; i += 1) {
               report[i] = {
                 isChanged: isFlags[i],
-                reg: arrayOfobj[i].reg,
-                rep: arrayOfobj[i].rep,
+                regex: arrayOfobj[i].regex,
+                replace: arrayOfobj[i].replace,
               };
             }
             return cb(null, report);
@@ -139,4 +137,4 @@ const fmod = (dir, arrayOfobj, cb) => {
 };
 
 
-export default fmod;
+export default replace;
