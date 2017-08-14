@@ -45,7 +45,7 @@ Using replace
 ----------
 
 ```javascript
-const replace = require('replace')
+const replace = require('replace-in')
 
 // let's create some phrases to replace it in our file.
 const phrase1 = {
