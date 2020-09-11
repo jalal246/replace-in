@@ -62,6 +62,6 @@
     "rimraf": "2.6.1"
   },
   "dependencies": {
-    "pathre": "0.0.2"
+    "pathre": "0.0.3"
   }
 }
