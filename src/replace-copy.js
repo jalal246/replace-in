@@ -26,13 +26,9 @@ function isReg(reg) {
   return typeof reg === "object";
 }
 
-function isStr(str) {
-  return typeof str === "string";
-}
-
 const TEMP_NAME = "temp-replace-in";
 
-async function replace(dir, opts) {
+async function replace(opts) {
   if (!opts || !Array.isArray(opts.request)) {
     err(`Invalid input`);
   }
@@ -41,7 +37,7 @@ async function replace(dir, opts) {
 
   for (let i = 0; i < lengthRequest; i += 1) {
     // validate request
-    if (!isReg(opts.request[i]) && !isStr(opts.request[i])) {
+    if (!isReg(opts.request[i])) {
       err(`Invalid request`);
       break;
     }
@@ -61,15 +57,15 @@ async function replace(dir, opts) {
 
   let isFoundAll = false;
 
-  Replace.prototype._transform = function (chunk) {
+  Replace.prototype._transform = function transform(chunk, enc, callback) {
     if (!isFoundAll) {
       let newChunk = chunk.toString();
       for (let i = 0; i < lengthRequest; i += 1) {
         if (!isFlags[i]) {
-          if (newChunk.match(lengthRequest[i].regex)) {
+          if (newChunk.match(opts.request[i].regex)) {
             newChunk = newChunk.replace(
-              lengthRequest[i].regex,
-              lengthRequest[i].replace
+              opts.request[i].regex,
+              opts.request[i].replace
             );
             isFlags[i] = true;
           }
@@ -79,48 +75,45 @@ async function replace(dir, opts) {
       if (!isFlags.includes(false)) {
         isFoundAll = true;
       }
-    } else this.push(chunk);
+    } else {
+      this.push(chunk);
+    }
+    callback();
   };
 
   const newPath = path.join(__dirname, TEMP_NAME);
 
-  const writeStream = fs.createWriteStream(newPath);
-
   return new Promise((resolve, reject) => {
+    const writeStream = fs.createWriteStream(newPath);
+    writeStream.on("error", (error) => reject(error));
+
     const readStream = fs.createReadStream(opts.path, {
       encoding: opts.encoding || "utf8",
     });
+    readStream.on("error", (error) => reject(error));
 
-    // pipe
     readStream.pipe(Replace()).pipe(writeStream);
 
-    readStream.on("error", (error) => reject(error));
-    writeStream.on("error", (error) => reject(error));
+    readStream.on("end", async () => {
+      try {
+        writeStream.end();
+        // await fsPromises.unlink(opts.path);
+        // await fsPromises.rename(newPath, opts.path);
+        await fileHandle.close();
+        const report = [];
 
-    writeStream.on("end", async () => {});
+        for (let i = 0; i < lengthRequest; i += 1) {
+          report[i] = {
+            isChanged: isFlags[i],
+            regex: opts.request[i].regex,
+            replace: opts.request[i].replace,
+          };
+        }
 
-    // finish reading
-    return readStream.on("end", () => {
-      writeStream.end();
-
-      return fs.unlink(opts.path, (deleteError) => {
-        if (deleteError) reject(deleteError);
-
-        return fs.rename(newPath, opts.path, async (renameError) => {
-          if (renameError) reject(renameError);
-
-          await fileHandle.close();
-          const report = [];
-
-          for (let i = 0; i < lengthRequest; i += 1) {
-            report[i] = {
-              isChanged: isFlags[i],
-              regex: opts.request[i].regex,
-              replace: opts.request[i].replace,
-            };
-          }
-        });
-      });
+        resolve(report);
+      } catch (error) {
+        reject(error);
+      }
     });
   });
 }

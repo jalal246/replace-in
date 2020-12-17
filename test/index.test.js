@@ -19,15 +19,42 @@ const LABEL7 = "cannot be last forever";
 const LABEL8 = "right?";
 const LABEL9 = "what!!";
 
-const phrase1 = new RegExp(LABEL1, "g");
-const phrase2 = new RegExp(`${LABEL2}`);
-const phrase3 = LABEL3;
-const phrase4 = LABEL4;
-const phrase5 = new RegExp(`${LABEL5}`);
-const phrase6 = LABEL6;
-const phrase7 = LABEL7;
-const phrase8 = new RegExp(`${LABEL8}`);
-const phrase9 = /what!!/gi;
+const phrase1 = {
+  regex: LABEL1,
+  replace: "replace with new 1",
+};
+const phrase2 = {
+  regex: new RegExp(`${LABEL2}`),
+  replace: "replace with new 2",
+};
+const phrase3 = {
+  regex: LABEL3,
+  replace: "replace with new 3",
+};
+const phrase4 = {
+  regex: LABEL4,
+  replace: "replace with new 4",
+};
+const phrase5 = {
+  regex: new RegExp(`${LABEL5}`),
+  replace: "replace with new 5",
+};
+const phrase6 = {
+  regex: LABEL6,
+  replace: "replace with new 6",
+};
+const phrase7 = {
+  regex: LABEL7,
+  replace: "replace with new 7",
+};
+const phrase8 = {
+  regex: new RegExp(`${LABEL8}`),
+  replace: "replace with new 8",
+};
+const phrase9 = {
+  regex: /what!!/gi,
+  replace: "replace with new 9",
+};
 
 const request = [
   phrase1,
@@ -42,28 +69,30 @@ const request = [
 ];
 
 describe("Testing invalid input", () => {
-  it("throws error for empty args", async () => {
+  it("throws an error for empty args", async () => {
     await expect(replace()).rejects.toThrow("Invalid input");
   });
 
-  it("throws error when no request is provided", async () => {
+  it("throws an error when no request is provided", async () => {
     await expect(replace({})).rejects.toThrow("Invalid input");
   });
 
-  it("throws error when request is not an array", async () => {
+  it("throws an error when request is not an array", async () => {
     await expect(replace({ request: "" })).rejects.toThrow("Invalid input");
   });
 
-  it("throws error when for invalid regex", async () => {
+  it("throws an error when for invalid regex", async () => {
     await expect(replace({ request: [9] })).rejects.toThrow("Invalid request");
   });
 
-  it("throws error when no path in applied", async () => {
-    await expect(replace({ request: ["Hi"] })).rejects.toThrow("Invalid path");
+  it("throws an error when no path in applied", async () => {
+    await expect(
+      replace({ request: [{ regex: "", replace: "" }] })
+    ).rejects.toThrow("Invalid path");
   });
 });
 
-describe("Testing data spread in file", () => {
+describe.only("Testing data spread in file", () => {
   beforeAll(() => {
     const ws1 = fs.createWriteStream(fileWithInfoSpread);
 
@@ -94,7 +123,7 @@ describe("Testing data spread in file", () => {
   });
 
   afterAll(() => {
-    fs.unlinkSync(fileWithInfoSpread);
+    // fs.unlinkSync(fileWithInfoSpread);
   });
 
   it("replaces requested strings", async () => {
@@ -104,11 +133,11 @@ describe("Testing data spread in file", () => {
 
     expect(report[0]).toStrictEqual({
       isChanged: true,
-      reg: new RegExp(LABEL1, "g"),
-      replace: [LABEL1],
+      regex: new RegExp(LABEL1, "g"),
+      replace: LABEL1,
     });
 
-    expect(report).toMatchSnapshot();
+    // expect(report).toMatchSnapshot();
   });
 });
 
