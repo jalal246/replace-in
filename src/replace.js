@@ -1,135 +1,125 @@
-import fs from "fs";
-import path from "path";
-import crypto from "crypto";
-import stream from "stream";
-import util from "util";
+/* eslint-disable no-underscore-dangle */
 
-const Transform = stream.Transform;
+"use_strict";
 
-// const dirMsg = 'Invalid path. Cannot find file to read from.';
-const cbMsg = "Invalid callback function.";
-const arrOfobjInvalidMsg = "Invalid array of objects";
-const arrOfobjEmptyMsg = "Empty array of objects";
-const regMsg = "Invalid regex at: ";
-const strMsg = "Invalid string to be replaced at: ";
+const fs = require("fs");
+const path = require("path");
+const stream = require("stream");
+const util = require("util");
 
-// function to generates error as you see.
-const errUnit = (errMsg) => new Error(`\x1b[33m${errMsg}\x1b[0m`);
+const { Transform } = stream;
 
-// check if input is string
-const isStr = (str) => typeof str === "string";
+const fsPromises = fs.promises;
 
-// check if input is regex
-const isReg = (regex) => typeof regex === "object";
+function Replace(options) {
+  if (!(this instanceof Replace)) {
+    return new Replace(options);
+  }
+  // init Transform
+  Transform.call(this, options);
+}
 
-// gets the phrase length
-const phLen = (phrase) => phrase.length;
+util.inherits(Replace, Transform);
 
-// create random file name for temp writting.
-const genRandomFn = (dir) => {
-  const ext = get.fileExt(dir);
-  if (ext === "env") return `.env.${crypto.randomBytes(2).toString("hex")}`;
-  return `${crypto.randomBytes(2).toString("hex")}.${ext}`;
-};
+function err(errMsg) {
+  throw TypeError(`\x1b[33m${errMsg}\x1b[0m`);
+}
 
-/**
- *
- * @param {Object}
- * @property {string} - directory
- * @property {number} - arrayOfobj
- * @callback {err~boolean}
- * if found and replaced then true, otherwise false.
- */
-const replace = (dir, arrayOfobj, cb) => {
-  // validate callback, else every error will be handled in callback error
-  if (typeof cb !== "function") throw errUnit(cbMsg);
-  // validate file.
-  return fs.open(dir, "r", (openErr, fd) => {
-    if (openErr) return cb(openErr);
-    // validate arrayOfobj
-    if (typeof arrayOfobj !== "object") return cb(errUnit(arrOfobjInvalidMsg));
-    // validate arrayOfobj length
-    const arrayLen = phLen(arrayOfobj);
-    if (arrayLen === 0) return cb(errUnit(arrOfobjEmptyMsg));
-    // validate the objects inside.
-    for (let i = 0; i < arrayLen; i += 1) {
-      // validate regMsg in find
-      if (!isReg(arrayOfobj[i].regex) && !isStr(arrayOfobj[i].regex)) {
-        return cb(errUnit(regMsg + arrayOfobj[i].regex));
-      }
-      // validate regMsg in replace
-      if (!isStr(arrayOfobj[i].replace))
-        return cb(errUnit(strMsg + arrayOfobj[i].replace));
+function isReg(reg) {
+  return typeof reg === "object";
+}
+
+async function replace(opts) {
+  if (!opts || !Array.isArray(opts.request)) {
+    err(`Invalid input`);
+  }
+
+  const lengthRequest = opts.request.length;
+
+  for (let i = 0; i < lengthRequest; i += 1) {
+    // validate request
+    if (!isReg(opts.request[i])) {
+      err(`Invalid request`);
+      break;
     }
-    // Everything good sir! ****************************************************
-    // create array of flags
-    const isFlags = [];
-    // init arry with default false.
-    for (let i = 0; i < arrayLen; i += 1) isFlags[i] = false;
-    // flags
-    let isFoundAll = false;
-    function Replace(options) {
-      // allow use without new
-      if (!(this instanceof Replace)) {
-        return new Replace(options);
-      }
-      // init Transform
-      Transform.call(this, options);
-    }
-    util.inherits(Replace, Transform);
-    Replace.prototype._transform = function (chunk, enc, callback) {
-      if (!isFoundAll) {
-        let newChunk = chunk.toString();
-        for (let i = 0; i < arrayLen; i += 1) {
-          if (!isFlags[i]) {
-            if (newChunk.match(arrayOfobj[i].regex)) {
-              newChunk = newChunk.replace(
-                arrayOfobj[i].regex,
-                arrayOfobj[i].replace
-              );
-              isFlags[i] = true;
-            }
+  }
+
+  if (!opts.path) {
+    err(`Invalid path`);
+  }
+
+  /**
+   * End of checking. Everything is good.
+   */
+  const fileHandle = await fsPromises.open(opts.path, "r");
+
+  const isFlags = [];
+  for (let i = 0; i < lengthRequest; i += 1) isFlags[i] = false;
+
+  let isFoundAll = false;
+
+  Replace.prototype._transform = function transform(chunk, enc, callback) {
+    if (!isFoundAll) {
+      let newChunk = chunk.toString();
+      for (let i = 0; i < lengthRequest; i += 1) {
+        if (!isFlags[i]) {
+          if (newChunk.match(opts.request[i].regex)) {
+            newChunk = newChunk.replace(
+              opts.request[i].regex,
+              opts.request[i].replace
+            );
+            isFlags[i] = true;
           }
         }
-        this.push(newChunk);
-        if (!isFlags.includes(false)) isFoundAll = true;
-      } else this.push(chunk);
-      callback();
-    };
-    const rStream = fs.createReadStream(dir, {
-      encoding: "utf8",
+      }
+      this.push(newChunk);
+      if (!isFlags.includes(false)) {
+        isFoundAll = true;
+      }
+    } else {
+      this.push(chunk);
+    }
+    callback();
+  };
+
+  const newPath = path.join(
+    path.dirname(opts.path),
+    `temp-${path.basename(opts.path)}`
+  );
+
+  return new Promise((resolve, reject) => {
+    const writeStream = fs.createWriteStream(newPath);
+    writeStream.on("error", (error) => reject(error));
+
+    const readStream = fs.createReadStream(opts.path, {
+      encoding: opts.encoding || "utf8",
     });
-    // handling streams error.
-    rStream.on("error", (err) => cb(err));
-    // create temporary file path for writing tem file when reading.
-    const nwPath = path.join(get.directory(dir), genRandomFn(dir));
-    const wStream = fs.createWriteStream(nwPath);
-    wStream.on("error", (err) => cb(err));
-    // pipe
-    rStream.pipe(Replace()).pipe(wStream);
-    // finish reading
-    return rStream.on("end", () => {
-      // stop writting.
-      wStream.end();
-      return fs.unlink(nwPath, (unErr) => {
-        if (unErr) return cb(unErr);
-        return fs.rename(nwPath, dir, (rnErr2) => {
-          if (unErr) return cb(rnErr2);
-          return fs.close(fd, () => {
-            const report = [];
-            for (let i = 0; i < arrayLen; i += 1) {
-              report[i] = {
-                isChanged: isFlags[i],
-                regex: arrayOfobj[i].regex,
-                replace: arrayOfobj[i].replace,
-              };
-            }
-            return cb(null, report);
-          });
-        });
-      });
+    readStream.on("error", (error) => reject(error));
+
+    readStream.pipe(Replace()).pipe(writeStream);
+
+    readStream.on("end", async () => {
+      try {
+        writeStream.end();
+        await fsPromises.unlink(opts.path);
+        await fsPromises.rename(newPath, opts.path);
+        await fileHandle.close();
+        const report = [];
+
+        for (let i = 0; i < lengthRequest; i += 1) {
+          report[i] = {
+            isChanged: isFlags[i],
+            regex: opts.request[i].regex,
+            replace: opts.request[i].replace,
+          };
+        }
+
+        resolve(report);
+      } catch (error) {
+        reject(error);
+      }
     });
   });
-};
+}
 
-export default replace;
+module.exports = replace;
