@@ -49,3 +49,103 @@ Array [
   },
 ]
 `;
+
+exports[`Testing in stacked file replaces requested strings 1`] = `
+Array [
+  Object {
+    "isChanged": true,
+    "regex": "hi guys!",
+    "replace": "replace with new 1",
+  },
+  Object {
+    "isChanged": true,
+    "regex": /what is up\\?/,
+    "replace": "replace with new 2",
+  },
+  Object {
+    "isChanged": true,
+    "regex": "is everything ok?",
+    "replace": "replace with new 3",
+  },
+  Object {
+    "isChanged": true,
+    "regex": "good, glad to here that from you",
+    "replace": "replace with new 4",
+  },
+  Object {
+    "isChanged": true,
+    "regex": /don't worry/,
+    "replace": "replace with new 5",
+  },
+  Object {
+    "isChanged": true,
+    "regex": "this test",
+    "replace": "replace with new 6",
+  },
+  Object {
+    "isChanged": true,
+    "regex": "cannot be last forever",
+    "replace": "replace with new 7",
+  },
+  Object {
+    "isChanged": true,
+    "regex": /right\\?/,
+    "replace": "replace with new 8",
+  },
+  Object {
+    "isChanged": true,
+    "regex": /what!!/gi,
+    "replace": "replace with new 9",
+  },
+]
+`;
+
+exports[`Testing no match returns isChanged false 1`] = `
+Array [
+  Object {
+    "isChanged": false,
+    "regex": "hi guys!",
+    "replace": "replace with new 1",
+  },
+  Object {
+    "isChanged": false,
+    "regex": /what is up\\?/,
+    "replace": "replace with new 2",
+  },
+  Object {
+    "isChanged": false,
+    "regex": "is everything ok?",
+    "replace": "replace with new 3",
+  },
+  Object {
+    "isChanged": false,
+    "regex": "good, glad to here that from you",
+    "replace": "replace with new 4",
+  },
+  Object {
+    "isChanged": false,
+    "regex": /don't worry/,
+    "replace": "replace with new 5",
+  },
+  Object {
+    "isChanged": false,
+    "regex": "this test",
+    "replace": "replace with new 6",
+  },
+  Object {
+    "isChanged": false,
+    "regex": "cannot be last forever",
+    "replace": "replace with new 7",
+  },
+  Object {
+    "isChanged": false,
+    "regex": /right\\?/,
+    "replace": "replace with new 8",
+  },
+  Object {
+    "isChanged": false,
+    "regex": /what!!/gi,
+    "replace": "replace with new 9",
+  },
+]
+`;
