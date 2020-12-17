@@ -1,41 +1,35 @@
-/* eslint no-underscore-dangle: ["error", { "allow": ["_transform"] }] */
-/* eslint func-names: ["error", "never"] */
-
-import fs from 'fs';
-import path from 'path';
-import crypto from 'crypto';
-import stream from 'stream';
-import util from 'util';
-import { get } from 'pathre';
+import fs from "fs";
+import path from "path";
+import crypto from "crypto";
+import stream from "stream";
+import util from "util";
 
 const Transform = stream.Transform;
 
-
 // const dirMsg = 'Invalid path. Cannot find file to read from.';
-const cbMsg = 'Invalid callback function.';
-const arrOfobjInvalidMsg = 'Invalid array of objects';
-const arrOfobjEmptyMsg = 'Empty array of objects';
-const regMsg = 'Invalid regex at: ';
-const strMsg = 'Invalid string to be replaced at: ';
-
+const cbMsg = "Invalid callback function.";
+const arrOfobjInvalidMsg = "Invalid array of objects";
+const arrOfobjEmptyMsg = "Empty array of objects";
+const regMsg = "Invalid regex at: ";
+const strMsg = "Invalid string to be replaced at: ";
 
 // function to generates error as you see.
-const errUnit = errMsg => new Error(`\x1b[33m${errMsg}\x1b[0m`);
+const errUnit = (errMsg) => new Error(`\x1b[33m${errMsg}\x1b[0m`);
 
 // check if input is string
-const isStr = str => typeof str === 'string';
+const isStr = (str) => typeof str === "string";
 
 // check if input is regex
-const isReg = regex => typeof regex === 'object';
+const isReg = (regex) => typeof regex === "object";
 
 // gets the phrase length
-const phLen = phrase => phrase.length;
+const phLen = (phrase) => phrase.length;
 
 // create random file name for temp writting.
 const genRandomFn = (dir) => {
   const ext = get.fileExt(dir);
-  if (ext === 'env') return `.env.${crypto.randomBytes(2).toString('hex')}`;
-  return `${crypto.randomBytes(2).toString('hex')}.${ext}`;
+  if (ext === "env") return `.env.${crypto.randomBytes(2).toString("hex")}`;
+  return `${crypto.randomBytes(2).toString("hex")}.${ext}`;
 };
 
 /**
@@ -48,12 +42,12 @@ const genRandomFn = (dir) => {
  */
 const replace = (dir, arrayOfobj, cb) => {
   // validate callback, else every error will be handled in callback error
-  if (typeof cb !== 'function') throw errUnit(cbMsg);
+  if (typeof cb !== "function") throw errUnit(cbMsg);
   // validate file.
-  return fs.open(dir, 'r', (openErr, fd) => {
+  return fs.open(dir, "r", (openErr, fd) => {
     if (openErr) return cb(openErr);
     // validate arrayOfobj
-    if (typeof arrayOfobj !== 'object') return cb(errUnit(arrOfobjInvalidMsg));
+    if (typeof arrayOfobj !== "object") return cb(errUnit(arrOfobjInvalidMsg));
     // validate arrayOfobj length
     const arrayLen = phLen(arrayOfobj);
     if (arrayLen === 0) return cb(errUnit(arrOfobjEmptyMsg));
@@ -64,7 +58,8 @@ const replace = (dir, arrayOfobj, cb) => {
         return cb(errUnit(regMsg + arrayOfobj[i].regex));
       }
       // validate regMsg in replace
-      if (!isStr(arrayOfobj[i].replace)) return cb(errUnit(strMsg + arrayOfobj[i].replace));
+      if (!isStr(arrayOfobj[i].replace))
+        return cb(errUnit(strMsg + arrayOfobj[i].replace));
     }
     // Everything good sir! ****************************************************
     // create array of flags
@@ -88,7 +83,10 @@ const replace = (dir, arrayOfobj, cb) => {
         for (let i = 0; i < arrayLen; i += 1) {
           if (!isFlags[i]) {
             if (newChunk.match(arrayOfobj[i].regex)) {
-              newChunk = newChunk.replace(arrayOfobj[i].regex, arrayOfobj[i].replace);
+              newChunk = newChunk.replace(
+                arrayOfobj[i].regex,
+                arrayOfobj[i].replace
+              );
               isFlags[i] = true;
             }
           }
@@ -99,20 +97,18 @@ const replace = (dir, arrayOfobj, cb) => {
       callback();
     };
     const rStream = fs.createReadStream(dir, {
-      encoding: 'utf8',
+      encoding: "utf8",
     });
     // handling streams error.
-    rStream.on('error', err => cb(err));
+    rStream.on("error", (err) => cb(err));
     // create temporary file path for writing tem file when reading.
     const nwPath = path.join(get.directory(dir), genRandomFn(dir));
     const wStream = fs.createWriteStream(nwPath);
-    wStream.on('error', err => cb(err));
+    wStream.on("error", (err) => cb(err));
     // pipe
-    rStream
-      .pipe(Replace())
-      .pipe(wStream);
+    rStream.pipe(Replace()).pipe(wStream);
     // finish reading
-    return rStream.on('end', () => {
+    return rStream.on("end", () => {
       // stop writting.
       wStream.end();
       return fs.unlink(nwPath, (unErr) => {
@@ -135,6 +131,5 @@ const replace = (dir, arrayOfobj, cb) => {
     });
   });
 };
-
 
 export default replace;

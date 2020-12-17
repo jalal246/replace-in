@@ -1,67 +1,44 @@
 {
   "name": "replace-in",
   "version": "0.1.0rc",
-  "description": "Replacing Text In File For Node",
-  "main": "lib/index.js",
-  "directories": {
-    "lib": "lib",
-    "test": "test"
-  },
+  "main": "src/replace.js",
+  "repository": "https://github.com/jalal246/replace-in.git",
   "scripts": {
-    "test": "mocha  --compilers js:babel-core/register test",
-    "test:w": "mocha  --compilers js:babel-core/register test -w",
-    "test:cov": "istanbul cover node_modules/mocha/bin/_mocha --  --compilers js:babel-core/register test",
-    "check:cov": "istanbul check-coverage --root coverage --statement 90 --branch 75 --function 80 --line 95",
-    "report:cov": "cat ./coverage/lcov.info | codecov",
-    "prebuild": "rimraf lib",
-    "build": "babel --out-dir lib src",
-    "prepublishOnly": "npm test && npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Jimmy02020/replace-in.git"
+    "test": "jest"
   },
   "keywords": [
-    "backend",
     "fs",
-    "stream",
-    "edit",
-    "modifier",
-    "replace"
+    "json",
+    "file",
+    "directory",
+    "recursive",
+    "read",
+    "textics",
+    "builderz",
+    "get-info",
+    "package-sorter",
+    "corename",
+    "build",
+    "folo",
+    "dflex",
+    "bundle",
+    "scripts",
+    "monorepo",
+    "production",
+    "utility",
+    "tools"
   ],
   "files": [
-    "lib",
+    "src",
     "README.md"
   ],
-  "author": "'Jalal Maskoun<'jimmy002020@gmail.com'>",
-  "license": "'MIT'",
-  "bugs": {
-    "url": "https://github.com/Jimmy02020/replace-in/issues"
-  },
-  "homepage": "https://github.com/Jimmy02020/replace-in#readme",
-  "babel": {
-    "presets": [
-      "es2015",
-      "stage-2"
-    ]
-  },
   "devDependencies": {
-    "babel-cli": "6.24.1",
-    "babel-core": "6.25.0",
-    "babel-loader": "7.1.1",
-    "babel-preset-es2015": "6.24.1",
-    "babel-preset-stage-0": "6.24.1",
-    "chai": "4.1.0",
-    "codecov.io": "0.1.6",
-    "eslint": "4.19.1",
-    "eslint-config-airbnb-base": "11.3.0",
-    "eslint-plugin-import": "2.7.0",
-    "faker": "4.1.0",
-    "istanbul": "1.1.0-alpha.1",
-    "mocha": "3.4.2",
-    "rimraf": "2.6.1"
+    "eslint": "^7.15.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-import": "^2.22.1",
+    "faker": "^5.1.0",
+    "jest": "^26.6.3"
   },
-  "dependencies": {
-    "pathre": "0.0.2"
-  }
+  "dependencies": {}
 }
