@@ -1,6 +1,6 @@
 {
   "name": "replace-in",
-  "version": "0.1.0rc",
+  "version": "1.0.0",
   "main": "src/replace.js",
   "repository": "https://github.com/jalal246/replace-in.git",
   "scripts": {
