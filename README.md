@@ -1,111 +1,110 @@
-[![NPM](https://nodei.co/npm/replace-in.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/replace-in/)
+# replace-in
 
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg)](https://travis-ci.org/Jimmy02020/replace-in)
-[![Codecov](https://img.shields.io/codecov/c/github/codecov/example-python.svg)](https://codecov.io/gh/Jimmy02020/replace-in)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Jimmy02020/replace-in/blob/master/LICENSE)
+> Replace text in a given file.
 
-Overview
---------
-``replace-in`` is file text-replacement for [node](https://nodejs.org/en/).
-
-How it works?
---------
-
-``replace`` Creates read [stream](https://nodejs.org/api/stream.html) to read from the target file in chunks, do the replacement in new file holding the updated chunk using write stream.
-Return array of objects contains the final results in callback function.
-
-Original file won't be modified instead ``replace`` will create new file which have new data and delete the old one.
-
-Getting Started
----------------
-
-clone the repo:
 ```sh
-git clone git@github.com:jimmy02020/replace-in.git
-cd replace-in
+npm install replace-in
 ```
 
-Using npm:
-```sh
-$ npm install replace-in
-```
+## How it works?
 
-Syntax
--------
+It creates a read stream to read from the target file in chunks. Replace each
+request and write the results using write stream. A final report will be
+returned when the replacement is done.
 
-### replace(path, objects[], callback)
+## API
 
-``path`` String.
+### replace(options)
 
-``objects[]`` array of objects. Each object must have two properties ``regex`` for RegExp/String to matching and ``replace`` the string that will replaced.
+`options` object contains:
 
-The callback gets two arguments ``(err, report)``.
+- `path: string` file path
+- `request: array` array of objects. Each object must have two properties:
+  - `regex` for RegExp/String to be matched.
+  - `replace` string replacement.
+- `encoding:? string` read stream encoding (default: `utf8`)
 
-Using replace
-----------
+The results is promise contains `report: array` An array of objects. Each element contains three keys:
 
-```javascript
-const replace = require('replace-in')
+- `isChanged: Boolean` search result.
+- `regex: string` regex sent in the request.
+- `replace: string` replacement sent in the request.
+
+### Example
+
+```js
+const replace = require("replace-in");
 
 // let's create some phrases to replace it in our file.
 const phrase1 = {
   // regex
-  regex:/old/ig,
+  regex: /old/gi,
   // replace
-  replace:'new'
-}
+  replace: "new",
+};
 
 // and we have to replace more.
 const phrase1 = {
   // regex
-  regex:'second',
+  regex: "second",
   // replace
-  replace:'third'
+  replace: "third",
+};
+
+const report = await replace({
+  path: "/path1/path2/fileName",
+  request: [phrase1, phrase1],
+});
+
+// > report
+// [
+//   {
+//     isChanged: true,
+//     regex: /old/gi,
+//     replace: "new",
+//   },
+//   {
+//     isChanged: false, // not found so it wasn't changed
+//     regex: "second",
+//     replace: "third",
+//   },
+// ];
+```
+
+Or you can check specific phrase result:
+
+```js
+const report = await replace({
+  path: "/path1/path2/fileName",
+  request: [phrase1, phrase1],
+});
+
+if (report[2].isChanged) {
+  console.log("phrase1 was found and changed");
+} else {
+  console.log("phrase1 was not found in the file!");
 }
-
-replace('/path1/path2/fileName', [phrase1, phrase1], (err, report) => {
-  //
-  [
-    {
-      isChanged: true,
-      regex:/old/ig,
-      replace:'new'
-    },
-    {
-      isChanged: false, // not found so it wasn't changed
-      regex:'second',
-      replace:'third'
-    },
-   ]
-  //
-});
-```
-Or you can check specific phrase result.
-
-```javascript
-replace('/path1/path2/fileName', [ph0, ph1, p2, ph3], (err, report) => {
-  if(report[2].isChanged){
-    console.log('p2 was found and changed');
-  } else {
-    console.log('not found');
-  }
-});
 ```
 
-
-Tests
------
+## Tests
 
 ```sh
-$ npm test
+test
 ```
 
-DISCLAIMER :disappointed:
-------------------------
-This package was in version 0.0.1 under `fmod` - shortcut for file modifier name and has changed to `replace` in next version.
-It turns out that FMOD is a registered trademark :open_mouth: and I don't want troubles :relaxed: :sweat_smile:
+### Related projects
 
-License
--------
+- [find-in](https://github.com/jalal246/packageSorter) - A tool, written in JS
+  for Searching Text in Files.
+- [textics](https://github.com/jalal246/textics-stream) &
+  [textics-stream](https://github.com/jalal246/textics) - counts lines, words, chars and spaces for a given string.
 
-This project is licensed under the [MIT License](https://github.com/Jimmy02020/replace-in/blob/master/LICENSE)
+- [packageSorter](https://github.com/jalal246/packageSorter) - Sorting packages
+  for monorepos production.
+
+- [move-position](https://github.com/jalal246/move-position) - Moves element in
+  given array form index-A to index-B.
+
+## License
+
+This project is licensed under the [MIT License](https://github.com/jalal246/replace-in/blob/master/LICENSE)
